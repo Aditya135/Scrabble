@@ -5,13 +5,11 @@
  */
 package scrabble;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.*;
-import java.util.Arrays;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -40,7 +38,7 @@ public class App extends JFrame{
         catch(Exception e){
             eng = null;
             System.out.println("failed to initialize Engine!");
-            e.printStackTrace();
+            System.exit(1);
         }
         
         setLayout(null);
@@ -63,6 +61,7 @@ public class App extends JFrame{
                 btn[i][j].setBorder(new LineBorder(Color.black));
                 btn[i][j].setBackground(Color.GRAY);
                 JLabel lbl = new JLabel("*",SwingConstants.CENTER);
+                lbl.setFont(new Font("Serif", Font.PLAIN, 20));
                 btn[i][j].add(lbl);
                 
                 btn[i][j].addMouseListener(new MouseAdapter(){
@@ -132,7 +131,7 @@ public class App extends JFrame{
         JPanel indicator_panel = new JPanel();
         indicator_panel.setBounds(0,0,200,50);
         indicator_panel.setBackground(Color.GRAY);
-        player_indicator = new JLabel("Player 0");
+        player_indicator = new JLabel("Player 1");
         player_indicator.setFont(new Font("Serif", Font.PLAIN, 20));
         player_indicator.setForeground(Color.blue);
         indicator_panel.add(player_indicator);
@@ -194,9 +193,10 @@ public class App extends JFrame{
                         if(jc instanceof JLabel){
                             if(updateEngineBoard(selected, keypressed)){
                                 ((JLabel) jc).setText(Character.toString(keypressed));
+                                selected.setBackground(Color.yellow);
                                 if(player_turn==1){
                                     player_turn = 0;
-                                    player_indicator.setText("Player 0");
+                                    player_indicator.setText("Player 1");
                                     letters = eng.getRandomLetters(5);
                                     for(int i=0;i<5;i++){
                                         letters_gui[i].setText(Character.toString(letters[i]));
@@ -204,7 +204,7 @@ public class App extends JFrame{
                                 }
                                 else{
                                     player_turn = 1;
-                                    player_indicator.setText("Player 1");
+                                    player_indicator.setText("Player 2");
                                     letters = eng.getRandomLetters(5);
                                     for(int i=0;i<5;i++){
                                         letters_gui[i].setText(Character.toString(letters[i]));
@@ -214,11 +214,12 @@ public class App extends JFrame{
                             }
                         }
                     }
-                    selected.setBackground(Color.gray);
+                    
                     selected = null;
                 }
                 else{
                     discovered.setText("Invalid!");
+                    selected.setBackground(Color.gray);
                 }
                 keypressed = '\0';
             }
