@@ -79,15 +79,17 @@ public class App extends JFrame{
                         Component Source = e.getComponent();
                         if(Source instanceof JPanel){
                            JPanel src = (JPanel) Source;
-                           if(selected==null){
-                                selected = src;
-                                selected.setBackground(Color.DARK_GRAY);
-                           }
-                           else{
-                               selected.setBackground(Color.GRAY);
-                               selected = src;
-                               selected.setBackground(Color.DARK_GRAY);
-                           }
+                            if(!marked(src)){
+                               if(selected==null){
+                                    selected = src;
+                                    selected.setBackground(Color.DARK_GRAY);
+                               }
+                               else{
+                                   selected.setBackground(Color.GRAY);
+                                   selected = src;
+                                   selected.setBackground(Color.DARK_GRAY);
+                               }
+                            }
                         }
                     }
                     
@@ -266,7 +268,16 @@ public class App extends JFrame{
             
         });
     }
-    
+    private boolean marked(JPanel source){
+        for(int i=0;i<num_cells;i++){
+            for(int j=0;j<num_cells;j++){
+                if(btn[i][j].equals(source)){
+                    if(eng.board[i][j]!='\0') return true;
+                }
+            }
+        }
+       return false;
+    }
     public boolean updateEngineBoard(JPanel source,char keypressed){
         for(int i=0;i<num_cells;i++){
             for(int j=0;j<num_cells;j++){
