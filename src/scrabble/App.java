@@ -5,6 +5,7 @@
  */
 package scrabble;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -22,7 +23,13 @@ public class App extends JFrame{
     Engine eng;
     public int player_turn=0;
     int num_cells;
+    int choice_num = 8;
     
+    int rem_cntr = 4;
+    
+    
+    
+    private int rem_cntr_;
     private JPanel[][] btn;
     private JLabel[] letters_gui;
     private JLabel player1_score,player2_score;
@@ -30,14 +37,16 @@ public class App extends JFrame{
     private JPanel selected;
     private JLabel player_indicator;
     private JLabel discovered;
-    public App(){
+    public App(String filename){
+        rem_cntr_ = rem_cntr;
         num_cells = 10;
         try{
-            eng = new Engine(num_cells);
+            eng = new Engine(num_cells,filename);
         }
         catch(Exception e){
             eng = null;
             System.out.println("failed to initialize Engine!");
+            e.printStackTrace();
             System.exit(1);
         }
         
@@ -106,19 +115,20 @@ public class App extends JFrame{
         JPanel wordDisplay = new JPanel();
         wordDisplay.setBounds(0,0,200,150);
         wordDisplay.setBackground(Color.blue);
-        wordDisplay.setLayout(new GridLayout(1,5));
-        wordDisplay.setBorder(new EmptyBorder(30,30,30,30));
-        letters_gui = new JLabel[5];
-        for(int i=0;i<5;i++){
-            letters_gui[i] = new JLabel("_");
+        
+        wordDisplay.setLayout(new GridLayout( choice_num/4,4));
+        wordDisplay.setBorder(new EmptyBorder(30,20,20,20));
+        letters_gui = new JLabel[choice_num];
+        
+        letters = eng.getRandomLetters(choice_num);
+        
+        for(int i=0;i<choice_num;i++){
+            letters_gui[i] = new JLabel();
+            
             letters_gui[i].setFont(new Font("Serif", Font.PLAIN, 20));
             letters_gui[i].setForeground(Color.yellow);
-            wordDisplay.add(letters_gui[i]);
-        }
-        
-        letters = eng.getRandomLetters(5);
-        for(int i=0;i<5;i++){
             letters_gui[i].setText(Character.toString(letters[i]));
+            wordDisplay.add(letters_gui[i]);
         }
         
         infopanel.add(wordDisplay);
@@ -194,20 +204,40 @@ public class App extends JFrame{
                             if(updateEngineBoard(selected, keypressed)){
                                 ((JLabel) jc).setText(Character.toString(keypressed));
                                 selected.setBackground(Color.yellow);
-                                if(player_turn==1){
-                                    player_turn = 0;
-                                    player_indicator.setText("Player 1");
-                                    letters = eng.getRandomLetters(5);
-                                    for(int i=0;i<5;i++){
-                                        letters_gui[i].setText(Character.toString(letters[i]));
+                                
+                                for(int i=0;i<letters.length;i++){
+                                    if(letters[i]==keypressed){
+                                        letters[i]='-';
+                                        letters_gui[i].setText("-");
+                                        rem_cntr_--;
                                     }
                                 }
-                                else{
+                                
+                                if(player_turn==1 && !(rem_cntr_>0)){
+                                    player_turn = 0;
+                                    rem_cntr_ = rem_cntr;
+                                    player_indicator.setText("Player 1");
+        
+                                    letters = eng.getRandomLetters(choice_num);
+        
+                                    for(int i=0;i<choice_num;i++){
+
+                                        letters_gui[i].setText(Character.toString(letters[i]));
+
+                                        }
+                                }
+                                else if (player_turn==0 && !(rem_cntr_>0)){
+                                    rem_cntr_ = rem_cntr;
                                     player_turn = 1;
                                     player_indicator.setText("Player 2");
-                                    letters = eng.getRandomLetters(5);
-                                    for(int i=0;i<5;i++){
+                                    
+
+        
+                                    letters = eng.getRandomLetters(choice_num);
+        
+                                    for(int i=0;i<choice_num;i++){
                                         letters_gui[i].setText(Character.toString(letters[i]));
+
                                     }
                                 }
                                 
