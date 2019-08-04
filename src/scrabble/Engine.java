@@ -6,10 +6,7 @@
 package scrabble;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -31,14 +28,14 @@ class Node{
 
 class Trie{
     public HashMap<Character, Node> roots;
-    public Trie()throws IOException{
+    public Trie(String filename)throws IOException{
        roots = new HashMap<>();
        for(char c = 'a';c<='z';c++){
            roots.put(c,new Node(c));
        }
        
-       File f = new File("src/scrabble/Resources/wordlist.txt");
-       BufferedReader br = new BufferedReader(new FileReader(f));
+       File f = new File(filename);
+       BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(filename)));
        String line;
        while((line = br.readLine())!=null){
            line = line.toLowerCase();
@@ -82,7 +79,7 @@ public class Engine {
     public Trie tr;
     public int num_cells;
     private ArrayList<String> discovered_words;
-    public Engine(int num_cells)throws IOException{
+    public Engine(int num_cells,String filename)throws IOException{
         
         visited = new HashMap<>();
         
@@ -93,7 +90,7 @@ public class Engine {
                 board[i][j] = '\0';
             }
         }
-        tr = new Trie();
+        tr = new Trie(filename);
     }
     public char[] getRandomLetters(int size){
         char[] tmp = new char[size];
@@ -118,6 +115,7 @@ public class Engine {
     public int boardUpdate(int i, int j, char key){
         if(board[i][j]!='\0') return -1;
         else{
+            discovered_words = new ArrayList<>();
             board[i][j] = key;
             int origin_i = i;
             int origin_j = j;
@@ -156,12 +154,11 @@ public class Engine {
     
     public int getScore(String s){
         int result = 0;
-        discovered_words = new ArrayList<>();
+        
         for(int i=0;i<s.length();i++){
             for(int j=i+1;j<=s.length();j++){
                 String tmp = s.substring(i,j);
                 if(!visited.containsKey(tmp) && tr.exist(tmp)){
-                    System.out.println(tmp);
                     discovered_words.add(tmp);
                     result+=tmp.length();
                     visited.put(tmp, Boolean.TRUE);
